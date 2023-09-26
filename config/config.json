@@ -1,0 +1,24 @@
+{
+  "development": {
+    "username": "root",
+    "password": "",
+    "database": "probando-sequelize",
+    "host": "localhost",
+    "dialect": "mysql",
+    "migrations-path": "migrations"
+  },
+  "test": {
+    "username": "root",
+    "password": "",
+    "database": "probando-sequelize",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "",
+    "database": "probando-sequelize",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}
