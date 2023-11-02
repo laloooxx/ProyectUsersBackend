@@ -19,10 +19,14 @@ exports.getPublicaciones = async (req, res) => {
 
 exports.createPublicacion = async(req, res) => {
 
+    /**
+     * almacenamos en un objeto de valores lo q requerimos del body para crear un usuario con el comando create de sequelize y devolvemos la respectiva respuesta
+     */
+    
     try {
         
-        const { fecha, descripcion, ubicacion, horas, imagen } = req.body;
-        const publicaciones = await Publicaciones.create({ fecha, descripcion, ubicacion, horas, imagen })
+        const { fecha, descripcion, ubicacion, horas, imagen, userId } = req.body;
+        const publicaciones = await Publicaciones.create({ fecha, descripcion, ubicacion, horas, imagen, userId })
 
         res.status(200).json({
             success: true,
@@ -33,6 +37,7 @@ exports.createPublicacion = async(req, res) => {
             succes: false,
             msg: 'Error del servidor'
         })
+        console.log(error);
     }
 };
 
@@ -40,9 +45,19 @@ exports.createPublicacion = async(req, res) => {
 
 exports.UpdatePublicacion = async(req, res) => {
 
+    /**
+     * creamos una constante para almacenar el id q requerimos del parametro
+     * almacenamos lo q requerimos del body q son el fecha, descripcion, ubicacion, horas, imagen, userId para actualizar el post
+     */
+
     const idPublic = req.params.id;
 
-    const { fecha, descripcion, ubicacion, horas, imagen } = req.body;
+    const { fecha, descripcion, ubicacion, horas, imagen, userId } = req.body;
+
+    /**
+     * creamos un trycatch para ir a la base de datos a buscar x el id q requerimos anteriomente y almacenamos en una variable publicaciones.
+     * Preguntamos si ese user esta vacio para devolver un error si es asi, guardamos los valores q traimos en la bd y mandamos la respectiva respuesta.
+     */
 
     try {
         const publicaciones = await Publicaciones.findByPk(idPublic);
@@ -54,6 +69,7 @@ exports.UpdatePublicacion = async(req, res) => {
     publicaciones.ubicacion = ubicacion;
     publicaciones.horas = horas;
     publicaciones.imagen = imagen;
+    publicaciones.userId = userId;
 
     await publicaciones.save();
     
@@ -74,10 +90,16 @@ exports.UpdatePublicacion = async(req, res) => {
 
 exports.deletePublicaciones = async(req, res) => {
 
+    /**
+     * creamos una variable q requerimos x el id del parametro para despues filtrar x ese id q obtuvimos y consultar si
+     * el id existe devolviendo su respectivo error.
+     * Luego si encontro algo cuando filtramos eliminamos la publicacion con el metodo destroy de sequelize y devolvemos
+     * la respuesta
+     */
     const idPublic = req.params.id;
 
     try {
-        const publicaciones = await Publicaciones.findByPk(idPublic);
+        const publicacionesid = await Publicaciones.findByPk(idPublic);
         
         if (!idPublic) {
             res.status(404).json({
@@ -87,20 +109,17 @@ exports.deletePublicaciones = async(req, res) => {
             return;
         }
 
-        try {
-            await Publicaciones.destroy({
-                where: {id: idPublic }
-            })
-        } catch (error) {
-            console.error(error);
-            res.status(404).json({
-                msg: 'Error del cliente al intentar eliminar la publicacion'
-            })
-        };
+        await publicacionesid.destroy();
+        res.status(200).json({
+                succes: true,
+                msg: 'Publicacion eliminada correctamente'
+            });
+ 
     } catch (error) {
         res.status(500).json({
             succes: false,
-            msg: 'Error del servidor'
+            msg: 'Error del servidor',
         });
+        console.log(error);
     }
 };

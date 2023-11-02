@@ -3,6 +3,11 @@ const { Model, DataTypes } = require('sequelize');
 const sequelize  = require('../config/database');
 const Publicaciones = require('./publicacionesModel');
 
+
+/**
+ * Creamos tablas con sequelize extendiendo de Model, con sus campos de las tablas
+ */
+
 class User extends Model{}
 
 User.init({
@@ -11,12 +16,13 @@ User.init({
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+        allowNull: false
     },
     username:{
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
-    } ,
+    },
     password:{
         type: DataTypes.STRING,
         allowNull: false
@@ -32,14 +38,19 @@ User.init({
         modelName: 'User'
     });
 
-    User.hasMany(Publicaciones, {foreignKey: 'userId'});
-    Publicaciones.belongsTo(User);
 
-User.sync()
-    .then(() =>{
-        console.log('Tabla usuarios creada correctamente')})
-    .catch((error) =>{
-        console.log('Error al crear la tabla usuarios', error)
-    });
+    /**
+     * Creamos las relaciones con la tabla publicaciones con las funciones de sequelize
+     *  Y sincronizamos la tabla creada con la base de datos q creamos con la funcion Sync y ya sincronizada con el proyecto 
+     */
+Publicaciones.belongsTo(User, {
+    foreignKey: 'userId',
+});
+User.hasMany(Publicaciones, {
+    foreignKey: 'userId',
+});
 
-module.exports = { User, Publicaciones };
+
+User.sync();
+
+module.exports = User;

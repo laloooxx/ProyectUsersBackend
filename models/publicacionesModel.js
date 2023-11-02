@@ -2,7 +2,9 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize  = require('../config/database');
 
-
+/**
+ * Creamos tablas con sequelize extendiendo de Model, con sus campos de las tablas
+ */
 class Publicaciones extends Model{}
 
 
@@ -34,10 +36,8 @@ Publicaciones.init({
     },
     userId: {
         type: DataTypes.INTEGER,
-        references: {
-            model: 'User',
-            key: 'id'
-        }
+        allowNull: false,
+        foreignKey: 'userId'
     }
     },
     {
@@ -46,13 +46,9 @@ Publicaciones.init({
     },
 );
 
+//Sincronizamos la tabla creada con la base de datos q creamos y ya sincronizamos con el proyecto
 
+Publicaciones.sync();
 
-// Publicaciones.sync()
-//     .then( ()=> {
-//         console.log("Tabla publicaciones creada correctamente")})
-//     .catch((error) => {
-//         console.log("Error en crear la tabla publicaciones", error)
-//     });
 
 module.exports = Publicaciones;

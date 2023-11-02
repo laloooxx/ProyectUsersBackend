@@ -1,12 +1,14 @@
 const User = require('../models/userModel');
 const sequelize  = require('../config/database');
+const redisClient = require('../services/cache');
+
 
 
 exports.getAllUsers = async (req, res) => {
 
     try {
         //aca recibimos todos los usuarios como un objeto json para poder hacer lo q queramos
-        const users = await User.User.findAll()
+        const users = await User.findAll();
 
         res.status(200).json({
             ok: true,
@@ -21,10 +23,39 @@ exports.getAllUsers = async (req, res) => {
 };
 
 
+exports.getUserById = async (req, res) => {
+    /**
+     * creamos una constante para almacenar el id q requerimos del parametro par luego filtrar x ese id y devolverlo
+     */
+    
+    const id = req.params.id;
+
+    try {
+        const users = await User.findByPk(id);
+        
+        res.status(200).json({
+            ok: true,
+            users
+        });
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            ok: false,
+            msg: 'Error en el servidor'
+        });
+    }
+};
+
+
 exports.createUser = async (req, res) => {
+
+    /**
+     * almacenamos en un objeto de valores lo q requerimos del body para crear un usuario con el comando create de sequelize y devolvemos la respectiva respuesta
+     */
     try {
         const {username, password, email} = req.body;
-        const user = await User.User.create({username, password, email});
+        const user = await User.create({username, password, email});
 
         res.status(201).json({
             ok: true,
@@ -38,45 +69,17 @@ exports.createUser = async (req, res) => {
     }
 };
 
-// exports.deleteUserById = async (req, res) => {
-    
-//     const id = req.params.id;
-
-//     try {
-//         const userId = await User.findByPk(id);
-        
-        
-//         if (!userId) {
-//             res.status(402).json({
-//                 success: false,
-//                 msg: `No se encontró el usuario con el id: ${id} o no ha ingresado correctamente los campos`
-//             })
-//         } else {
-//             await User.destroy({
-//                 where: { id: userId }
-//             });
-//             res.status(200).json ({
-//                 success: true,
-//                 msg: 'Usuario eliminado correctamente'
-//             })
-//         }
-           
-//     } catch (error) {
-//         res.status(500).json({
-//             ok: false,
-//             msg: 'Error del servidor', 
-//             error
-//         });
-//     }
-// };
 
 
 
 exports.deleteUserById = async (req, res) => {
+    /**
+     * creamos una constante para almacenar el id q requerimos del parametro par luego filtrar x ese id
+     */
     const id = req.params.id;
 
     try {
-        const userId = await User.User.findByPk(id);
+        const userId = await User.findByPk(id);
 
         // Verificamos si el usuario existe
         if (!userId) {
@@ -88,20 +91,8 @@ exports.deleteUserById = async (req, res) => {
         }
 
         // Intentamos eliminar el usuario
-        try {
-            await User.User.destroy({
-                where: { id: userId }
-            });
-        } catch (error) {
-            // El usuario tiene relaciones con otras tablas
-            res.status(500).json({
-                ok: false,
-                msg: 'Error al eliminar el usuario',
-                error
-            });
-            return;
-        }
 
+        await userId.destroy();
         // Eliminamos el usuario correctamente
         res.status(200).json({
             success: true,
@@ -119,14 +110,20 @@ exports.deleteUserById = async (req, res) => {
 
 
 exports.updateUserById = async (req, res) => {
+    /**
+     * creamos una constante para almacenar el id q requerimos del parametro
+     * almacenamos lo q requerimos del body q son el username,password y email para actualizar el usuario
+     */
     const userId = req.params.id;
 
-
     const { username, password, email} = req.body;
-    console.log(username, password, email);
+
+    /**
+     * creamos un trycatch para ir a la base de datos a buscar x el id q requerimos anteriomente y almacenamos en una variable user.
+     * Preguntamos si ese user esta vacio para devolver un error si es asi, guardamos los valores q trajimos en la bd y mandamos la respuesta.
+     */
     try {
-    const user = await User.User.findByPk(userId);
-    console.log(user);
+    const user = await User.findByPk(userId);
     
     if(!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
 
@@ -143,5 +140,37 @@ exports.updateUserById = async (req, res) => {
         res.status(500).json({
             msg: 'Error del servidor'
          })
+    }
+};
+
+
+exports.getWithRedis = async (req, res) => {
+    console.log('ingresamos a la funcion');
+    
+    try {
+        //voy a buscar a la cache si tiene el valor cursos y devuelvo (si existe en la cache) todo lo q tenga
+        const getResultRedis = await redisClient.get('juanUser');
+        console.log('ingresamos al try');
+        if (getResultRedis) {
+            return res.status(200).json({ 
+                data: JSON.parse(getResultRedis)
+            })
+            console.log('Usuarios almacenados en cache correctamente')
+        };
+        console.log('fallo de cache');
+
+        //si no obtenemos nada del cache, buscamos en nuestra base de datos los usuarios y los almacenamos en el cache ahora si, para cuando vuelva a hacer la peticion ya quede almcenada en el cache
+        const response = await User.findAll();
+        const saveResultRedis = await redisClient.set('juanUser', JSON.stringify(response));
+        console.log('nueva data de cache');
+        return res.status(200).json({
+            data: response
+        })
+    } catch (error) {
+        console.error('error accediendo a los datos');
+        res.status(500).json({
+            error,
+            msg: 'error accediendo a los datos'
+        });
     }
 };
