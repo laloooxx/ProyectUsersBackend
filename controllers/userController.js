@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const sequelize  = require('../config/database');
 const redisClient = require('../services/cache');
+const bcrypt = require('bcrypt');
 
 
 
@@ -54,18 +55,38 @@ exports.createUser = async (req, res) => {
      * almacenamos en un objeto de valores lo q requerimos del body para crear un usuario con el comando create de sequelize y devolvemos la respectiva respuesta
      */
     try {
+
         const {username, password, email} = req.body;
-        const user = await User.create({username, password, email});
+        //encriptamos la contraseña
+        // const passwordHash = await bcrypt.hash(password, 10);
+
+        if (username === User.username) {
+            return res.status(408).json({
+                msg: 'El usuario ya existe'
+            })
+        } else if (email === User.email) return res.status(403).json({msg: 'El email ya existe'});
+
+
+        const user = await User.create({
+            username, 
+            password,
+            // password: passwordHash, 
+            email
+        });
 
         res.status(201).json({
             ok: true,
-            user
+            id: user.id,
+            username: user.username,
+            email: user.email
         });
+        console.log(user);
     } catch (error) {
         console.error(error);
         res.status(500).json({
             msg: 'Error del servidor'
         })
+        console.error(error)
     }
 };
 
@@ -118,6 +139,20 @@ exports.updateUserById = async (req, res) => {
 
     const { username, password, email} = req.body;
 
+
+    existeUsuario = await User.findOne({where: {username: username}});
+    existeEmail = await User.findOne({where: {email: email}})
+
+    if (existeUsuario) {
+        console.error(`El usuario ${username} ya existe`)
+        return res.status(408).json({
+            msg: 'El usuario ya existe'
+        })
+    };
+    if (existeEmail) {
+        console.error(`El email ${email} ya existe`);
+        return res.status(403).json({msg: 'El email ya existe'})
+    };
     /**
      * creamos un trycatch para ir a la base de datos a buscar x el id q requerimos anteriomente y almacenamos en una variable user.
      * Preguntamos si ese user esta vacio para devolver un error si es asi, guardamos los valores q trajimos en la bd y mandamos la respuesta.
@@ -125,7 +160,9 @@ exports.updateUserById = async (req, res) => {
     try {
     const user = await User.findByPk(userId);
     
+
     if(!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+
 
     user.username = username;
     user.password = password;
@@ -137,7 +174,7 @@ exports.updateUserById = async (req, res) => {
         ok: true,
         user})
     } catch (error) {
-        res.status(500).json({
+        res.status(501).json({
             msg: 'Error del servidor'
          })
     }

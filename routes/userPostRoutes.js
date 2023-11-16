@@ -3,9 +3,8 @@ const router = express.Router();
 const userPost = require('../controllers/userPostController');
 
 
-router.get('/:id', userPost.getPosts);
+router.get('/user-post/:id', userPost.getPosts);
 
-// router.post('/:id', );
 
 
 module.exports = router;

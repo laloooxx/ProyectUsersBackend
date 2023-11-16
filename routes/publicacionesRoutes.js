@@ -7,6 +7,8 @@ const publicacionesController = require('../controllers/publicacionesController'
  */
 router.get('/publicaciones', publicacionesController.getPublicaciones);
 
+router.get('/publicaciones/:id',publicacionesController.getPublicacionesById);
+
 router.post('/publicaciones', publicacionesController.createPublicacion);
 
 router.put('/publicaciones/:id', publicacionesController.UpdatePublicacion);

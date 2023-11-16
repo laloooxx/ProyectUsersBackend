@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const responseTime = require('response-time');
-
+const login = require('../routes/loginRoutes');
+const verifyToken = require('../middlewares/verifyToken');
 
 class Server {
     constructor() {
@@ -26,8 +27,9 @@ class Server {
 
         this.app.use('/api', userRoutes);
         this.app.use('/api', publicacionesRoutes);
+        this.app.use('/api', login);
         this.app.use('/api/relaciones', userPostsRoutes);
-        // this.app.use('/protected', require('../routes/protectedRoutes'))
+        this.app.use('/protected', verifyToken)
     };
 
     listen() {

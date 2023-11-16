@@ -17,6 +17,25 @@ exports.getPublicaciones = async (req, res) => {
 };
 
 
+exports.getPublicacionesById = async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        const posts = await Publicaciones.findByPk(postId);
+
+        res.status(200).json({
+            success: true,
+            posts
+        })
+    } catch (error) {
+        res.status(500).json({
+            succes: false,
+            error: error.message
+        });
+    }
+};
+
+
 exports.createPublicacion = async(req, res) => {
 
     /**
