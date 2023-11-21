@@ -67,13 +67,22 @@ exports.createUser = async (req, res) => {
         //encriptamos la contraseña
         // const passwordHash = await bcrypt.hash(password, 10);
 
-        if (username === User.username) {
-            return res.status(408).json({
+        userExiste = await User.findOne({where: {username: username}});
+        if (userExiste) {
+            console.error(`El usuario ${username} ya existe`)
+            return res.status(403).json({
                 msg: 'El usuario ya existe'
             })
-        } else if (email === User.email) return res.status(403).json({msg: 'El email ya existe'});
+        };
 
 
+        emailExiste = await User.findOne({where: {email: email}})
+        if (emailExiste) {
+            console.error(`El email ${email} ya existe`);
+            return res.status(403).json({
+                msg: 'El email ya existe'
+            })
+        };
         const user = await User.create({
             username, 
             password,
@@ -89,11 +98,11 @@ exports.createUser = async (req, res) => {
         });
         console.log(user);
     } catch (error) {
-        console.error(error);
+        console.error('error al procesar la solicitud', error);
         res.status(500).json({
-            msg: 'Error del servidor'
+            msg: 'Error del servidor',
+            error: error.message
         })
-        console.error(error)
     }
 };
 

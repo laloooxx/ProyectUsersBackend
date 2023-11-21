@@ -1,19 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const publicacionesController = require('../controllers/publicacionesController');
+const verifyToken = require('../middlewares/verifyToken');
 
 /**
  * creamos las rutas para las publicaciones con sus respectivas controladores
  */
-router.get('/publicaciones', publicacionesController.getPublicaciones);
+router.get('/', publicacionesController.getPublicaciones);
 
-router.get('/publicaciones/:id',publicacionesController.getPublicacionesById);
+router.get('/:id',publicacionesController.getPublicacionesById);
 
-router.post('/publicaciones', publicacionesController.createPublicacion);
+router.post('/', publicacionesController.createPublicacion);
 
-router.put('/publicaciones/:id', publicacionesController.UpdatePublicacion);
+router.put('/:id', publicacionesController.UpdatePublicacion);
 
-router.delete('/publicaciones/:id', publicacionesController.deletePublicaciones);
+router.delete('/:id', publicacionesController.deletePublicaciones);
 
 
 module.exports = router;

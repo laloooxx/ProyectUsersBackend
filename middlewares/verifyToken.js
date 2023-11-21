@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-function verifyToken (req, res, next) {
-    const token = req.headers.authorization;
+async function verifyToken (req, res, next) {
+    const token = await req.headers.authorization;
     if (!token) return res.status(401).json({ msg: 'Token no proporcionado'});
 
     jwt.verify(token, 'secretito_secretin', (err, decoded) => {

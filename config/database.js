@@ -5,7 +5,7 @@ const sequelize = new Sequelize(
     //los valores de la base de datos va a ir aca
     'probando-sequelize',
     'root',
-    '',
+    'juansito1',
     {
         host: 'localhost',
         dialect: 'mysql'

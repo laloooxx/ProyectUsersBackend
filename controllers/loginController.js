@@ -8,7 +8,7 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
     try {
         const result = await User.findOne({ where: { email: email }});
-
+        console.log(result);
         if (!result) {return res.status(401).json({msg: 'Credenciales incorrectas'})};
         
         
@@ -25,6 +25,7 @@ exports.login = async (req, res) => {
             const token = jwt.sign({id: result.id, email}, 'secretito_secretin', {
                 expiresIn: '3m'
             });
+            console.log(token);
 
             console.log(token);
             return res.status(200).json({

@@ -2,20 +2,21 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const cache = require('../services/cache');
+const verifyToken = require('../middlewares/verifyToken');
 
 
 /**
  * creamos las rutas para los usuarios con sus respectivas controladores
  */
-router.get('/users', userController.getAllUsers);
+router.get('/', userController.getAllUsers);
 
-router.get('/users/:id',userController.getUserById);
+router.get('/:id',userController.getUserById);
 
-router.post('/users', userController.createUser);
+router.post('/', userController.createUser);
 
-router.put('/users/:id', userController.updateUserById);
+router.put('/:id', userController.updateUserById);
 
-router.delete('/users/:id', userController.deleteUserById);
+router.delete(':/id', userController.deleteUserById);
 
 router.get('/users/redis', userController.getWithRedis);
 

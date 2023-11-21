@@ -25,10 +25,10 @@ class Server {
         const publicacionesRoutes = require('../routes/publicacionesRoutes');
         const userPostsRoutes = require('../routes/userPostRoutes');
 
-        this.app.use('/api', userRoutes);
-        this.app.use('/api', publicacionesRoutes);
-        this.app.use('/api', login);
-        this.app.use('/api/relaciones', userPostsRoutes);
+        this.app.use('/users', userRoutes);
+        this.app.use('/publicaciones', publicacionesRoutes);
+        this.app.use('/login', login);
+        this.app.use('/users-publicaciones', userPostsRoutes);
         this.app.use('/protected', verifyToken)
     };
 

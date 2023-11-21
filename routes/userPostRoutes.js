@@ -3,7 +3,7 @@ const router = express.Router();
 const userPost = require('../controllers/userPostController');
 
 
-router.get('/user-post/:id', userPost.getPosts);
+router.get('/:id', userPost.getPosts);
 
 
 
