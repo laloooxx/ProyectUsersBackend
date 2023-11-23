@@ -6,7 +6,6 @@ exports.getPublicaciones = async (req, res) => {
         const publicaciones = await Publicaciones.findAll();
 
         res.status(200).json({
-            succes: true,
             publicaciones
         })
     } catch (error) {
@@ -21,11 +20,10 @@ exports.getPublicacionesById = async (req, res) => {
     const postId = req.params.id;
 
     try {
-        const posts = await Publicaciones.findByPk(postId);
+        const post = await Publicaciones.findByPk(postId);
 
         res.status(200).json({
-            success: true,
-            posts
+            post
         })
     } catch (error) {
         res.status(500).json({

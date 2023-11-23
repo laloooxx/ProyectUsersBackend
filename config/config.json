@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "",
-    "database": "probando-sequelize",
+    "database": "tpFinal",
     "host": "localhost",
     "dialect": "mysql",
     "migrations-path": "migrations"
@@ -10,14 +10,14 @@
   "test": {
     "username": "root",
     "password": "",
-    "database": "probando-sequelize",
+    "database": "tpFinal",
     "host": "localhost",
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
     "password": "",
-    "database": "probando-sequelize",
+    "database": "tpFinal",
     "host": "localhost",
     "dialect": "mysql"
   }
