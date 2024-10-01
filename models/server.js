@@ -4,11 +4,13 @@ const morgan = require('morgan');
 const responseTime = require('response-time');
 const login = require('../routes/loginRoutes');
 const verifyToken = require('../middlewares/verifyToken');
+const { createUser } = require('../controllers/loginController');
+require('dotenv').config();
 
 class Server {
     constructor() {
         this.app = express();
-        this.port = 3000;
+        this.port = process.env.PORT;
         this.middlewares();
         this.routes();
     };
@@ -25,11 +27,10 @@ class Server {
         const publicacionesRoutes = require('../routes/publicacionesRoutes');
         const userPostsRoutes = require('../routes/userPostRoutes');
 
-        this.app.use('/users', userRoutes);
-        this.app.use('/publicaciones', publicacionesRoutes);
-        this.app.use('/login', login);
+        this.app.use('/users' ,userRoutes);
+        this.app.use('/publicaciones' ,publicacionesRoutes);
+        this.app.use('/auth', login);
         this.app.use('/users-publicaciones', userPostsRoutes);
-        this.app.use('/protected', verifyToken)
     };
 
     listen() {

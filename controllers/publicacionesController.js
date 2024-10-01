@@ -116,7 +116,7 @@ exports.deletePublicaciones = async(req, res) => {
     const idPublic = req.params.id;
 
     try {
-        const publicacionesid = await Publicaciones.findByPk(idPublic);
+        const publicacionesId = await Publicaciones.findByPk(idPublic);
         
         if (!idPublic) {
             res.status(404).json({
@@ -126,7 +126,7 @@ exports.deletePublicaciones = async(req, res) => {
             return;
         }
 
-        await publicacionesid.destroy();
+        await publicacionesId.destroy();
         res.status(200).json({
                 succes: true,
                 msg: 'Publicacion eliminada correctamente'

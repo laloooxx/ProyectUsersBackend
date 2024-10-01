@@ -56,57 +56,6 @@ exports.getUserById = async (req, res) => {
 };
 
 
-exports.createUser = async (req, res) => {
-
-    /**
-     * almacenamos en un objeto de valores lo q requerimos del body para crear un usuario con el comando create de sequelize y devolvemos la respectiva respuesta
-     */
-    try {
-
-        const {username, password, email} = req.body;
-        //encriptamos la contraseña
-        // const passwordHash = await bcrypt.hash(password, 10);
-
-        userExiste = await User.findOne({where: {username: username}});
-        if (userExiste) {
-            console.error(`El usuario ${username} ya existe`)
-            return res.status(403).json({
-                msg: 'El usuario ya existe'
-            })
-        };
-
-
-        emailExiste = await User.findOne({where: {email: email}})
-        if (emailExiste) {
-            console.error(`El email ${email} ya existe`);
-            return res.status(403).json({
-                msg: 'El email ya existe'
-            })
-        };
-        const user = await User.create({
-            username, 
-            password,
-            // password: passwordHash, 
-            email
-        });
-
-        res.status(201).json({
-            ok: true,
-            id: user.id,
-            username: user.username,
-            email: user.email
-        });
-        console.log(user);
-    } catch (error) {
-        console.error('error al procesar la solicitud', error);
-        res.status(500).json({
-            msg: 'Error del servidor',
-            error: error.message
-        })
-    }
-};
-
-
 
 
 exports.deleteUserById = async (req, res) => {
@@ -198,7 +147,6 @@ exports.updateUserById = async (req, res) => {
 
 
 exports.getWithRedis = async (req, res) => {
-    console.log('ingresamos a la funcion');
     
     try {
         //voy a buscar a la cache si tiene el valor cursos y devuelvo (si existe en la cache) todo lo q tenga
@@ -208,7 +156,6 @@ exports.getWithRedis = async (req, res) => {
             return res.status(200).json({ 
                 data: JSON.parse(getResultRedis)
             })
-            console.log('Usuarios almacenados en cache correctamente')
         };
         console.log('fallo de cache');
 
